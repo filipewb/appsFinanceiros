@@ -11,7 +11,12 @@ class AppColors {
     Color(0xFF438883),
   ];
 
+  static const List<Color> greyGradient = [
+    Color(0xFFB5B5B5),
+    Color(0xFF7F7F7F),
+  ];
+
   static const Color white = Color(0xFFFFFFFF);
-  static const Color iceWhite = Color(0xFFFEEF8F7);
+  static const Color iceWhite = Color(0xFFEEF8F7);
   static const Color grey = Color(0xFF444444);
 }
