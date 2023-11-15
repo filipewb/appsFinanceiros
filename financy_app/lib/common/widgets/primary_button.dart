@@ -13,33 +13,30 @@ class PrimaryButton extends StatelessWidget {
     required this.text,
   }) : super(key: key);
 
+  final BorderRadius _borderRadius = const BorderRadius.all(
+    Radius.circular(24),
+  );
+
   @override
   Widget build(BuildContext context) {
-    return Material(
-      borderRadius: const BorderRadius.all(Radius.circular(38)),
-      child: Ink(
-        decoration: const BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(28)),
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: AppColors.greenGradient,
-          ),
+    return Ink(
+      height: 48,
+      decoration: BoxDecoration(
+        borderRadius: _borderRadius,
+        gradient: const LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: AppColors.greenGradient,
         ),
-        child: InkWell(
-          borderRadius: const BorderRadius.all(Radius.circular(38)),
-          onTap: onPressed,
-          child: Container(
-            decoration: const BoxDecoration(
-              borderRadius: BorderRadius.all(Radius.circular(38)),
-            ),
-            alignment: Alignment.center,
-            height: 64,
-            child: Text(
-              text,
-              style: AppTextStyles.mediumText18.copyWith(
-                color: AppColors.white,
-              ),
+      ),
+      child: InkWell(
+        borderRadius: _borderRadius,
+        onTap: onPressed,
+        child: Align(
+          child: Text(
+            text,
+            style: AppTextStyles.mediumText18.copyWith(
+              color: AppColors.white,
             ),
           ),
         ),
