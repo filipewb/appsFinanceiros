@@ -1,6 +1,10 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:flutter/material.dart';
+
 import 'package:financy_app/common/constants/app_colors.dart';
 import 'package:financy_app/common/constants/app_text_styles.dart';
-import 'package:flutter/material.dart';
+
+import '../../common/widgets/primary_button.dart';
 
 class OnboardingPage extends StatelessWidget {
   const OnboardingPage({super.key});
@@ -8,16 +12,14 @@ class OnboardingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.iceWhite,
       body: Align(
         child: Column(
           children: [
-            const SizedBox(height: 60),
+            const SizedBox(height: 48),
             Expanded(
               flex: 2,
-              child: Container(
-                color: AppColors.iceWhite,
-                child: Image.asset('assets/images/man.png'),
-              ),
+              child: Image.asset('assets/images/man.png'),
             ),
             Text(
               'Spend Smarter',
@@ -31,9 +33,15 @@ class OnboardingPage extends StatelessWidget {
                 color: AppColors.greenLightTwo,
               ),
             ),
-            ElevatedButton(
-              onPressed: () {},
-              child: const Text('Get Started'),
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 32,
+                vertical: 16,
+              ),
+              child: PrimaryButton(
+                text: 'Get Started',
+                onPressed: () {},
+              ),
             ),
             Text(
               'Already have account? Log In',
@@ -41,7 +49,7 @@ class OnboardingPage extends StatelessWidget {
                 color: AppColors.grey,
               ),
             ),
-            const SizedBox(height: 40),
+            const SizedBox(height: 24),
           ],
         ),
       ),
