@@ -1,9 +1,11 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
 
 import '../../common/constants/app_colors.dart';
 import '../../common/constants/app_text_styles.dart';
+import '../../common/widgets/custom_text_form_field.dart';
 import '../../common/widgets/multi_text_button.dart';
 import '../../common/widgets/primary_button.dart';
 
@@ -30,8 +32,16 @@ class SignUpPage extends StatelessWidget {
             ),
           ),
           Image.asset('assets/images/sign_up_image.png'),
-          TextFormField(),
-          const TextField(),
+          const Form(
+            child: Column(
+              children: [
+                CustomTextFormField(
+                  labelText: "your name",
+                  hintText: "John Doe",
+                ),
+              ],
+            ),
+          ),
           Padding(
             padding: const EdgeInsets.only(
               left: 32,
