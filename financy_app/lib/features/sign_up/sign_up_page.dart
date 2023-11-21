@@ -22,14 +22,14 @@ class SignUpPage extends StatelessWidget {
             'Spend Smarter',
             textAlign: TextAlign.center,
             style: AppTextStyles.mediumText.copyWith(
-              color: AppColors.greenLightTwo,
+              color: AppColors.greenTwo,
             ),
           ),
           Text(
             'Save More',
             textAlign: TextAlign.center,
             style: AppTextStyles.mediumText.copyWith(
-              color: AppColors.greenLightTwo,
+              color: AppColors.greenTwo,
             ),
           ),
           Image.asset('assets/images/sign_up_image.png'),
@@ -75,7 +75,7 @@ class SignUpPage extends StatelessWidget {
               Text(
                 'Log In',
                 style: AppTextStyles.smallText.copyWith(
-                  color: AppColors.greenLightTwo,
+                  color: AppColors.greenTwo,
                 ),
               ),
             ],
