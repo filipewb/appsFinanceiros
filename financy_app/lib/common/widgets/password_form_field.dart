@@ -1,5 +1,4 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'dart:developer';
 
 import 'package:flutter/material.dart';
 
@@ -44,7 +43,6 @@ class _PasswordFormFieldState extends State<PasswordFormField> {
         borderRadius: BorderRadius.circular(23),
         child: Icon(isHidden ? Icons.visibility : Icons.visibility_off),
         onTap: () {
-          log("pressionou o olho");
           setState(() {
             isHidden = !isHidden;
           });
