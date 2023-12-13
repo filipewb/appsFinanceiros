@@ -4,7 +4,6 @@ import 'package:financy_app/services/auth_service.dart';
 class MockAuthService implements AuthService {
   @override
   Future signIn() {
-    // TODO: implement signIn
     throw UnimplementedError();
   }
 
