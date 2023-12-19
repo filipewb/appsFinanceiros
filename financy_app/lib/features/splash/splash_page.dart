@@ -1,10 +1,13 @@
-import 'dart:async';
-
-import 'package:financy_app/common/constants/app_colors.dart';
-import 'package:financy_app/common/constants/app_text_styles.dart';
-import 'package:financy_app/common/constants/routes.dart';
+import 'package:financy_app/common/widgets/custom_bottom_sheet.dart';
 import 'package:financy_app/common/widgets/custom_circular_progress_indicator.dart';
 import 'package:flutter/material.dart';
+
+import '../../common/constants/constants.dart';
+import '../../common/extensions/extensions.dart';
+import '../../locator.dart';
+import '../../services/sync_service/sync_service.dart';
+import 'splash_controller.dart';
+import 'splash_state.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
@@ -13,25 +16,69 @@ class SplashPage extends StatefulWidget {
   State<SplashPage> createState() => _SplashPageState();
 }
 
-class _SplashPageState extends State<SplashPage> {
+class _SplashPageState extends State<SplashPage> with CustomModalSheetMixin {
+  final _splashController = locator.get<SplashController>();
+  final _syncController = locator.get<SyncController>();
+
   @override
   void initState() {
     super.initState();
-    init();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) => Sizes.init(context));
+
+    _splashController.isUserLogged();
+    _splashController.addListener(_handleSplashStateChange);
+    _syncController.addListener(_handleSyncStateChange);
   }
 
-  Timer init() {
-    return Timer(
-      const Duration(seconds: 2),
-      navigateToOnboarding,
-    );
+  @override
+  void dispose() {
+    _splashController.dispose();
+    _syncController.dispose();
+    super.dispose();
   }
 
-  void navigateToOnboarding() {
-    Navigator.pushReplacementNamed(
-      context,
-      NamedRoutes.initial,
-    );
+  void _handleSplashStateChange() {
+    if (_splashController.state is AuthenticatedUser) {
+      _syncController.syncFromServer();
+    } else {
+      Navigator.pushReplacementNamed(
+        context,
+        NamedRoute.initial,
+      );
+    }
+  }
+
+  void _handleSyncStateChange() {
+    final state = _syncController.state;
+
+    switch (state.runtimeType) {
+      case DownloadedDataFromServer:
+        _syncController.syncToServer();
+        break;
+      case UploadedDataToServer:
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          NamedRoute.home,
+          (route) => false,
+        );
+        break;
+      case SyncStateError:
+      case UploadDataToServerError:
+      case DownloadDataFromServerError:
+        showCustomModalBottomSheet(
+          context: context,
+          content: (state as SyncStateError).message,
+          buttonText: 'Go to login',
+          isDismissible: false,
+          onPressed: () => Navigator.pushNamedAndRemoveUntil(
+            context,
+            NamedRoute.initial,
+            (route) => false,
+          ),
+        );
+        break;
+    }
   }
 
   @override
@@ -51,8 +98,13 @@ class _SplashPageState extends State<SplashPage> {
           children: [
             Text(
               'financy',
-              style: AppTextStyles.bigText.copyWith(color: AppColors.white),
+              style: AppTextStyles.bigText50.copyWith(color: AppColors.white),
             ),
+            Text(
+              'Syncing data...',
+              style: AppTextStyles.smallText13.copyWith(color: AppColors.white),
+            ),
+            const SizedBox(height: 16.0),
             const CustomCircularProgressIndicator(),
           ],
         ),

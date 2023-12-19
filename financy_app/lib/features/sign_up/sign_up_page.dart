@@ -1,21 +1,21 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:developer';
 
 import 'package:financy_app/common/utils/uppercase_text_formatter.dart';
 import 'package:financy_app/common/utils/validator.dart';
+import 'package:financy_app/common/widgets/custom_bottom_sheet.dart';
+import 'package:financy_app/common/widgets/custom_circular_progress_indicator.dart';
+import 'package:financy_app/common/widgets/custom_text_form_field.dart';
+import 'package:financy_app/common/widgets/multi_text_button.dart';
 import 'package:financy_app/common/widgets/password_form_field.dart';
-import 'package:financy_app/features/sign_up/sign_up_controller.dart';
-import 'package:financy_app/features/sign_up/sign_up_state.dart';
-import 'package:financy_app/services/mock_auth_service.dart';
+import 'package:financy_app/common/widgets/primary_button.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
-import '../../common/constants/app_colors.dart';
-import '../../common/constants/app_text_styles.dart';
-import '../../common/widgets/custom_bottom_sheet.dart';
-import '../../common/widgets/custom_circular_progress_indicator.dart';
-import '../../common/widgets/custom_text_form_field.dart';
-import '../../common/widgets/multi_text_button.dart';
-import '../../common/widgets/primary_button.dart';
+import '../../common/constants/constants.dart';
+import '../../locator.dart';
+import '../../services/services.dart';
+import 'sign_up_controller.dart';
+import 'sign_up_state.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -24,77 +24,127 @@ class SignUpPage extends StatefulWidget {
   State<SignUpPage> createState() => _SignUpPageState();
 }
 
-class _SignUpPageState extends State<SignUpPage> {
+class _SignUpPageState extends State<SignUpPage> with CustomModalSheetMixin {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _controller = SignUpController(MockAuthService());
+  final _signUpController = locator.get<SignUpController>();
+  final _syncController = locator.get<SyncController>();
 
   @override
   void dispose() {
     _nameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
+    _signUpController.dispose();
+    _syncController.dispose();
     super.dispose();
   }
 
   @override
   void initState() {
     super.initState();
-    _controller.addListener(() {
-      if (_controller.state is SignUpLoadingState) {
+    _signUpController.addListener(_handleSignUpstateChange);
+    _syncController.addListener(_handleSyncStateChange);
+  }
+
+  void _handleSignUpstateChange() {
+    final state = _signUpController.state;
+    switch (state.runtimeType) {
+      case SignUpStateLoading:
         showDialog(
           context: context,
           builder: (context) => const CustomCircularProgressIndicator(),
         );
-      }
-      if (_controller.state is SignUpSuccessState) {
+        break;
+      case SignUpStateSuccess:
+        _syncController.syncFromServer();
+        break;
+      case SignUpStateError:
         Navigator.pop(context);
-        Navigator.push(
+        showCustomModalBottomSheet(
+          context: context,
+          content: (state as SignUpStateError).message,
+          buttonText: "Try again",
+        );
+        break;
+    }
+  }
+
+  void _handleSyncStateChange() {
+    switch (_syncController.state.runtimeType) {
+      case DownloadedDataFromServer:
+        _syncController.syncToServer();
+        break;
+      case UploadedDataToServer:
+        Navigator.pushNamedAndRemoveUntil(
           context,
-          MaterialPageRoute(
-            builder: (context) => const Scaffold(
-              body: Center(
-                child: Text("nova tela"),
-              ),
-            ),
+          NamedRoute.home,
+          (route) => false,
+        );
+        break;
+      case SyncStateError:
+      case UploadDataToServerError:
+      case DownloadDataFromServerError:
+        Navigator.pop(context);
+        showCustomModalBottomSheet(
+          context: context,
+          content: (_syncController.state as SyncStateError).message,
+          buttonText: "Try again",
+          onPressed: () => Navigator.pushNamedAndRemoveUntil(
+            context,
+            NamedRoute.signUp,
+            (route) => false,
           ),
         );
-      }
-      if (_controller.state is SignUpErrorState) {
-        final errorMessage = _controller.state as SignUpErrorState;
-        Navigator.pop(context);
-        customModalBottomSheet(context);
-      }
-    });
+        break;
+    }
+  }
+
+  void _onSignUpButtonPressed() {
+    final valid =
+        _formKey.currentState != null && _formKey.currentState!.validate();
+    if (valid) {
+      _signUpController.signUp(
+        name: _nameController.text,
+        email: _emailController.text,
+        password: _passwordController.text,
+      );
+    } else {
+      log("erro ao logar");
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: ListView(
+        key: Keys.signUpListView,
         children: [
           Text(
             'Spend Smarter',
             textAlign: TextAlign.center,
-            style: AppTextStyles.mediumText.copyWith(
-              color: AppColors.greenTwo,
+            style: AppTextStyles.mediumText36.copyWith(
+              color: AppColors.greenOne,
             ),
           ),
           Text(
             'Save More',
             textAlign: TextAlign.center,
-            style: AppTextStyles.mediumText.copyWith(
-              color: AppColors.greenTwo,
+            style: AppTextStyles.mediumText36.copyWith(
+              color: AppColors.greenOne,
             ),
           ),
-          Image.asset('assets/images/sign_up_image.png'),
+          Image.asset(
+            'assets/images/sign_up_image.png',
+          ),
           Form(
             key: _formKey,
             child: Column(
               children: [
                 CustomTextFormField(
+                  key: Keys.signUpNameField,
                   controller: _nameController,
                   labelText: "your name",
                   hintText: "JOHN DOE",
@@ -104,12 +154,14 @@ class _SignUpPageState extends State<SignUpPage> {
                   validator: Validator.validateName,
                 ),
                 CustomTextFormField(
+                  key: Keys.signUpEmailField,
                   controller: _emailController,
                   labelText: "your email",
-                  hintText: "jhon@email.com",
+                  hintText: "john@email.com",
                   validator: Validator.validateEmail,
                 ),
                 PasswordFormField(
+                  key: Keys.signUpPasswordField,
                   controller: _passwordController,
                   labelText: "choose your password",
                   hintText: "*********",
@@ -118,40 +170,65 @@ class _SignUpPageState extends State<SignUpPage> {
                       "Must have at least 8 characters, 1 capital letter and 1 number.",
                 ),
                 PasswordFormField(
+                  key: Keys.signUpConfirmPasswordField,
                   labelText: "confirm your password",
                   hintText: "*********",
                   validator: (value) => Validator.validateConfirmPassword(
-                    value,
                     _passwordController.text,
+                    value,
                   ),
+                  onEditingComplete: _onSignUpButtonPressed,
                 ),
               ],
             ),
           ),
           Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 32.0),
+            child: Text.rich(
+              TextSpan(children: [
+                const TextSpan(text: 'By signing up you comply with our '),
+                TextSpan(
+                  text: 'Agreements',
+                  style: AppTextStyles.smallText13.copyWith(
+                    color: AppColors.darkGrey,
+                  ),
+                  recognizer: TapGestureRecognizer()
+                    ..onTap = () {
+                      Feedback.forTap(context);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => Container(),
+                        ),
+                      );
+                    },
+                ),
+              ]),
+              textAlign: TextAlign.center,
+              style: AppTextStyles.smallText13.copyWith(
+                color: AppColors.grey,
+              ),
+            ),
+          ),
+          Padding(
             padding: const EdgeInsets.only(
-              left: 32,
-              right: 32,
-              top: 16,
-              bottom: 4,
+              left: 32.0,
+              right: 32.0,
+              top: 16.0,
+              bottom: 4.0,
             ),
             child: PrimaryButton(
+              key: Keys.signUpButton,
               text: 'Sign Up',
-              onPressed: () {
-                final valid = _formKey.currentState != null &&
-                    _formKey.currentState!.validate();
-                if (valid) {
-                  _controller.signUp(
-                    name: _nameController.text,
-                    email: _emailController.text,
-                    password: _passwordController.text,
-                  );
-                } else {}
-              },
+              onPressed: _onSignUpButtonPressed,
             ),
           ),
           MultiTextButton(
-            onPressed: () => log('message'),
+            key: Keys.signUpAlreadyHaveAccountButton,
+            onPressed: () => Navigator.popAndPushNamed(
+              context,
+              NamedRoute.signIn,
+            ),
             children: [
               Text(
                 'Already have account? ',
@@ -160,9 +237,9 @@ class _SignUpPageState extends State<SignUpPage> {
                 ),
               ),
               Text(
-                'Log In',
+                'Sign In ',
                 style: AppTextStyles.smallText.copyWith(
-                  color: AppColors.greenTwo,
+                  color: AppColors.greenOne,
                 ),
               ),
             ],
