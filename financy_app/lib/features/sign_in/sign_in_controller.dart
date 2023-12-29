@@ -1,11 +1,17 @@
-import 'package:financy_app/features/sign_in/sign_in_state.dart';
-import 'package:financy_app/services/auth_service/auth_service.dart';
 import 'package:flutter/foundation.dart';
 
-class SignInController extends ChangeNotifier {
-  final AuthService _service;
+import '../../services/services.dart';
+import 'sign_in_state.dart';
 
-  SignInController(this._service);
+class SignInController extends ChangeNotifier {
+  SignInController({
+    required AuthService authService,
+    required SecureStorageService secureStorageService,
+  })  : _secureStorageService = secureStorageService,
+        _authService = authService;
+
+  final AuthService _authService;
+  final SecureStorageService _secureStorageService;
 
   SignInState _state = SignInStateInitial();
 
@@ -20,25 +26,26 @@ class SignInController extends ChangeNotifier {
     required String email,
     required String password,
   }) async {
-    const secureStorage = SecureStorage();
     _changeState(SignInStateLoading());
 
-    try {
-      final user = await _service.signIn(
-        email: email,
-        password: password,
-      );
+    final result = await _authService.signIn(
+      email: email,
+      password: password,
+    );
 
-      if (user.id != null) {
-        secureStorage.write(key: "CURRENT_USER", value: user.toJson());
-        _changeState(SignInStateSuccess());
-      } else {
-        throw Exception();
-      }
+    result.fold(
+      (error) => _changeState(SignInStateError(error.message)),
+      (data) async {
+        await _secureStorageService.write(
+          key: "CURRENT_USER",
+          value: data.toJson(),
+        );
 
-      _changeState(SignInStateSuccess());
-    } catch (e) {
-      _changeState(SignInStateError(e.toString()));
-    }
+        result.fold(
+          (error) => _changeState(SignInStateError(error.message)),
+          (_) => _changeState(SignInStateSuccess()),
+        );
+      },
+    );
   }
 }

@@ -1,8 +1,7 @@
-import 'package:financy_app/common/widgets/multi_text_button.dart';
-import 'package:financy_app/common/widgets/primary_button.dart';
 import 'package:flutter/material.dart';
 
 import '../../common/constants/constants.dart';
+import '../../common/widgets/widgets.dart';
 
 class OnboardingPage extends StatelessWidget {
   const OnboardingPage({super.key});

@@ -2,8 +2,17 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get_it/get_it.dart';
 
+
+import 'common/features/transaction/transaction_controller.dart';
+import 'features/balance/balance_controller.dart';
+import 'features/home/home_controller.dart';
+import 'features/profile/profile_controller.dart';
+import 'features/sign_in/sign_in_controller.dart';
 import 'features/sign_up/sign_up_controller.dart';
 import 'features/splash/splash_controller.dart';
+import 'features/stats/stats_controller.dart';
+import 'features/wallet/wallet_controller.dart';
+import 'repositories/repositories.dart';
 import 'services/services.dart';
 
 final locator = GetIt.instance;
@@ -45,12 +54,12 @@ void setupDependencies() {
 
   //Register Repositories
 
-  // locator.registerFactory<TransactionRepository>(
-  //   () => TransactionRepositoryImpl(
-  //     databaseService: locator.get<DatabaseService>(),
-  //     syncService: locator.get<SyncService>(),
-  //   ),
-  // );
+  locator.registerFactory<TransactionRepository>(
+    () => TransactionRepositoryImpl(
+      databaseService: locator.get<DatabaseService>(),
+      syncService: locator.get<SyncService>(),
+    ),
+  );
 
   //Register Controllers
 
@@ -60,12 +69,12 @@ void setupDependencies() {
     ),
   );
 
-  // locator.registerFactory<SignInController>(
-  //   () => SignInController(
-  //     authService: locator.get<AuthService>(),
-  //     secureStorageService: locator.get<SecureStorageService>(),
-  //   ),
-  // );
+  locator.registerFactory<SignInController>(
+    () => SignInController(
+      authService: locator.get<AuthService>(),
+      secureStorageService: locator.get<SecureStorageService>(),
+    ),
+  );
 
   locator.registerFactory<SignUpController>(
     () => SignUpController(
@@ -74,31 +83,31 @@ void setupDependencies() {
     ),
   );
 
-  // locator.registerLazySingleton<HomeController>(
-  //   () => HomeController(
-  //     transactionRepository: locator.get<TransactionRepository>(),
-  //     userDataService: locator.get<UserDataService>(),
-  //   ),
-  // );
+  locator.registerLazySingleton<HomeController>(
+    () => HomeController(
+      transactionRepository: locator.get<TransactionRepository>(),
+      userDataService: locator.get<UserDataService>(),
+    ),
+  );
 
-  // locator.registerLazySingleton<WalletController>(
-  //   () => WalletController(
-  //     transactionRepository: locator.get<TransactionRepository>(),
-  //   ),
-  // );
+  locator.registerLazySingleton<WalletController>(
+    () => WalletController(
+      transactionRepository: locator.get<TransactionRepository>(),
+    ),
+  );
 
-  // locator.registerLazySingleton<BalanceController>(
-  //   () => BalanceController(
-  //     transactionRepository: locator.get<TransactionRepository>(),
-  //   ),
-  // );
+  locator.registerLazySingleton<BalanceController>(
+    () => BalanceController(
+      transactionRepository: locator.get<TransactionRepository>(),
+    ),
+  );
 
-  // locator.registerLazySingleton<TransactionController>(
-  //   () => TransactionController(
-  //     transactionRepository: locator.get<TransactionRepository>(),
-  //     secureStorageService: locator.get<SecureStorageService>(),
-  //   ),
-  // );
+  locator.registerLazySingleton<TransactionController>(
+    () => TransactionController(
+      transactionRepository: locator.get<TransactionRepository>(),
+      secureStorageService: locator.get<SecureStorageService>(),
+    ),
+  );
 
   locator.registerFactory<SyncController>(
     () => SyncController(
@@ -106,9 +115,9 @@ void setupDependencies() {
     ),
   );
 
-  // locator.registerFactory<ProfileController>(
-  //     () => ProfileController(userDataService: locator.get<UserDataService>()));
+  locator.registerFactory<ProfileController>(
+      () => ProfileController(userDataService: locator.get<UserDataService>()));
 
-  // locator.registerLazySingleton<StatsController>(() => StatsController(
-  //     transactionRepository: locator.get<TransactionRepository>()));
+  locator.registerLazySingleton<StatsController>(() => StatsController(
+      transactionRepository: locator.get<TransactionRepository>()));
 }

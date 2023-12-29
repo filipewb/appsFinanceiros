@@ -1,17 +1,12 @@
 import 'dart:developer';
 
-import 'package:financy_app/common/utils/uppercase_text_formatter.dart';
-import 'package:financy_app/common/utils/validator.dart';
-import 'package:financy_app/common/widgets/custom_bottom_sheet.dart';
-import 'package:financy_app/common/widgets/custom_circular_progress_indicator.dart';
-import 'package:financy_app/common/widgets/custom_text_form_field.dart';
-import 'package:financy_app/common/widgets/multi_text_button.dart';
-import 'package:financy_app/common/widgets/password_form_field.dart';
-import 'package:financy_app/common/widgets/primary_button.dart';
+import 'package:financy_docs/financy_docs.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 import '../../common/constants/constants.dart';
+import '../../common/utils/utils.dart';
+import '../../common/widgets/widgets.dart';
 import '../../locator.dart';
 import '../../services/services.dart';
 import 'sign_up_controller.dart';
@@ -198,7 +193,7 @@ class _SignUpPageState extends State<SignUpPage> with CustomModalSheetMixin {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => Container(),
+                          builder: (context) => const Agreements(),
                         ),
                       );
                     },

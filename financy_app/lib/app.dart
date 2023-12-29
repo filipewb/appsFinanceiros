@@ -1,13 +1,17 @@
-import 'package:financy_app/common/themes/default_theme.dart';
-import 'package:financy_app/features/home/home_page.dart';
-import 'package:financy_app/features/onboarding/onboarding_page.dart';
-import 'package:financy_app/features/sign_in/sign_in_page.dart';
 import 'package:flutter/material.dart';
 
 import 'common/constants/constants.dart';
-
+import 'common/models/models.dart';
+import 'common/themes/default_theme.dart';
+import 'features/home/home.dart';
+import 'features/onboarding/onboarding.dart';
+import 'features/profile/profile.dart';
+import 'features/sign_in/sign_in.dart';
 import 'features/sign_up/sign_up.dart';
 import 'features/splash/splash.dart';
+import 'features/stats/stats.dart';
+import 'features/transactions/transaction_page.dart';
+import 'features/wallet/wallet.dart';
 
 class App extends StatelessWidget {
   const App({super.key});
@@ -23,16 +27,16 @@ class App extends StatelessWidget {
         NamedRoute.splash: (context) => const SplashPage(),
         NamedRoute.signUp: (context) => const SignUpPage(),
         NamedRoute.signIn: (context) => const SignInPage(),
-        NamedRoute.home: (context) => const HomePage(),
-        // NamedRoute.stats: (context) => const StatsPage(),
-        // NamedRoute.wallet: (context) => const WalletPage(),
-        // NamedRoute.profile: (context) => const ProfilePage(),
-        // NamedRoute.transaction: (context) {
-        //   final args = ModalRoute.of(context)?.settings.arguments;
-        //   // return TransactionPage(
-        //   //   transaction: args != null ? args as TransactionModel : null,
-        //   // );
-        // },
+        NamedRoute.home: (context) => const HomePageView(),
+        NamedRoute.stats: (context) => const StatsPage(),
+        NamedRoute.wallet: (context) => const WalletPage(),
+        NamedRoute.profile: (context) => const ProfilePage(),
+        NamedRoute.transaction: (context) {
+          final args = ModalRoute.of(context)?.settings.arguments;
+          return TransactionPage(
+            transaction: args != null ? args as TransactionModel : null,
+          );
+        },
       },
     );
   }
