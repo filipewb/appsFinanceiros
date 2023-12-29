@@ -16,22 +16,29 @@ class SignInController extends ChangeNotifier {
     notifyListeners();
   }
 
-Future<void> signIn({
+  Future<void> signIn({
     required String email,
     required String password,
   }) async {
+    const secureStorage = SecureStorage();
     _changeState(SignInStateLoading());
 
     try {
-      await _service.signIn(
+      final user = await _service.signIn(
         email: email,
         password: password,
       );
+
+      if (user.id != null) {
+        secureStorage.write(key: "CURRENT_USER", value: user.toJson());
+        _changeState(SignInStateSuccess());
+      } else {
+        throw Exception();
+      }
 
       _changeState(SignInStateSuccess());
     } catch (e) {
       _changeState(SignInStateError(e.toString()));
     }
   }
-
 }

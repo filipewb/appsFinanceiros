@@ -1,4 +1,5 @@
 import 'package:financy_app/common/themes/default_theme.dart';
+import 'package:financy_app/features/home/home_page.dart';
 import 'package:financy_app/features/onboarding/onboarding_page.dart';
 import 'package:financy_app/features/sign_in/sign_in_page.dart';
 import 'package:flutter/material.dart';
@@ -22,7 +23,7 @@ class App extends StatelessWidget {
         NamedRoute.splash: (context) => const SplashPage(),
         NamedRoute.signUp: (context) => const SignUpPage(),
         NamedRoute.signIn: (context) => const SignInPage(),
-        // NamedRoute.home: (context) => const HomePageView(),
+        NamedRoute.home: (context) => const HomePage(),
         // NamedRoute.stats: (context) => const StatsPage(),
         // NamedRoute.wallet: (context) => const WalletPage(),
         // NamedRoute.profile: (context) => const ProfilePage(),
